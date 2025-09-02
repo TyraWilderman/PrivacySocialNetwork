@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Social Network</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(30, 30, 50, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        .header h1 {
+            color: #e0e0e0;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            text-align: center;
+            color: #a0a0a0;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+
+        .sidebar, .feed, .activity {
+            background: rgba(30, 30, 50, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        .section-title {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid rgba(100, 100, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .wallet-status {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #48bb78;
+            color: #e0e0e0;
+        }
+
+        .wallet-status.disconnected {
+            border-left-color: #f56565;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4a5fff 0%, #7b61ff 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(123, 97, 255, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #c0c0c0;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(100, 100, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            background: rgba(20, 20, 40, 0.8);
+            color: #e0e0e0;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #7b61ff;
+        }
+
+        .post {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #7b61ff;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #c0c0c0;
+        }
+
+        .post-time {
+            color: #808080;
+            font-size: 0.9em;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-actions button {
+            background: transparent;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            color: #c0c0c0;
+        }
+
+        .post-actions button:hover {
+            background: rgba(123, 97, 255, 0.2);
+            border-color: #7b61ff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #7b61ff;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .user-profile {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e0e0e0;
+        }
+
+        .privacy-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .privacy-public { background: #c6f6d5; color: #276749; }
+        .privacy-followers { background: #fed7d7; color: #742a2a; }
+        .privacy-private { background: #bee3f8; color: #2a4365; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #a0a0a0;
+            padding: 20px;
+        }
+
+        .error {
+            background: rgba(200, 50, 50, 0.3);
+            color: #ff9999;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(200, 50, 50, 0.5);
+        }
+
+        .success {
+            background: rgba(50, 200, 100, 0.3);
+            color: #99ff99;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(50, 200, 100, 0.5);
+        }
+
+        .message-item {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #7b61ff;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: #c0c0c0;
+        }
+
+        .message-time {
+            color: #808080;
+        }
+
+        .message-content {
+            color: #e0e0e0;
+        }
+
+        .network-info {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+        }
+
+        .contract-info {
+            font-size: 0.8em;
+            color: #a0a0a0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Privacy Social Network</h1>
+            <p>Anonymous social interactions powered by FHE encryption</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <h3 class="section-title">📊 Network Stats</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalUsers">-</div>
+                        <div class="stat-label">Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalPosts">-</div>
+                        <div class="stat-label">Posts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalConnections">-</div>
+                        <div class="stat-label">Connections</div>
+                    </div>
+                </div>
+
+                <div class="network-info">
+                    <h4>📡 Network Info</h4>
+                    <div class="contract-info">
+                        <strong>Network:</strong> Sepolia Testnet<br>
+                        <strong>Contract:</strong> 0x656eFbc9F88f6554751624DF82fa2F6C84e6232c
+                    </div>
+                </div>
+
+                <h3 class="section-title">👤 Your Profile</h3>
+                <div class="user-profile">
+                    <div id="userStatus">Connect wallet to view profile</div>
+                </div>
+
+                <div class="wallet-status disconnected" id="walletStatus">
+                    <strong>Wallet: Disconnected</strong>
+                    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+                </div>
+            </div>
+
+            <!-- Main Feed -->
+            <div class="feed">
+                <h3 class="section-title">📝 Create Post</h3>
+                <div class="input-group">
+                    <label>Content</label>
+                    <textarea id="postContent" placeholder="Share something with the network..." rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Privacy Level</label>
+                    <select id="privacyLevel">
+                        <option value="0">🌐 Public</option>
+                        <option value="1">👥 Followers Only</option>
+                        <option value="2">🔒 Private</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="createPost()" disabled id="createPostBtn">Create Post</button>
+
+                <h3 class="section-title">📰 Recent Posts</h3>
+                <div id="postsContainer">
+                    <div class="loading">Connect wallet and register to view posts</div>
+                </div>
+            </div>
+
+            <!-- Right Activity -->
+            <div class="activity">
+                <h3 class="section-title">🎯 Quick Actions</h3>
+
+                <div class="input-group">
+                    <label>Profile Hash</label>
+                    <input type="text" id="profileHash" placeholder="Enter your unique profile identifier" />
+                </div>
+                <button class="btn" onclick="registerUser()" disabled id="registerBtn">
+                    <span id="registerBtnText">Connect Wallet First</span>
+                </button>
+
+                <div class="input-group">
+                    <label>Follow User Address</label>
+                    <input type="text" id="followAddress" placeholder="0x..." />
+                </div>
+                <button class="btn" onclick="followUser()" disabled id="followBtn">Follow User</button>
+
+                <h3 class="section-title">💬 Private Messages</h3>
+                <div class="input-group">
+                    <label>Recipient Address</label>
+                    <input type="text" id="messageRecipient" placeholder="0x..." />
+                </div>
+                <div class="input-group">
+                    <label>Message</label>
+                    <textarea id="messageContent" placeholder="Private encrypted message..." rows="2"></textarea>
+                </div>
+                <button class="btn" onclick="sendMessage()" disabled id="sendMessageBtn">Send Message</button>
+
+                <div id="messagesContainer">
+                    <div class="loading">Register to view messages</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        // Contract configuration
+        const CONTRACT_ADDRESS = "0x656eFbc9F88f6554751624DF82fa2F6C84e6232c";
+        const CONTRACT_ABI = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user1",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user2",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ConnectionEstablished",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint32",
+                        "name": "messageId",
+                        "type": "uint32"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    }
+                ],
+                "name": "MessageSent",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint32",
+                        "name": "postId",
+                        "type": "uint32"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "author",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "PostCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint32",
+                        "name": "postId",
+                        "type": "uint32"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "liker",
+                        "type": "address"
+                    }
+                ],
+                "name": "PostLiked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint32",
+                        "name": "postId",
+                        "type": "uint32"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sharer",
+                        "type": "address"
+                    }
+                ],
+                "name": "PostShared",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "ReputationUpdated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "UserRegistered",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "connections",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user1",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "user2",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isActive",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "connectionIds",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "_contentHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "_privacyLevel",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "createPost",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_userToFollow",
+                        "type": "address"
+                    }
+                ],
+                "name": "followUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getNetworkStats",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "users_count",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "posts_count",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "connections_count",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_postId",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "getPostInfo",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "author",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "contentHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isVisible",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getUserMessageCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getUserPostCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_limit",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getUserPosts",
+                "outputs": [
+                    {
+                        "internalType": "uint32[]",
+                        "name": "",
+                        "type": "uint32[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "isFollowing",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_follower",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_following",
+                        "type": "address"
+                    }
+                ],
+                "name": "isUserFollowing",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_postId",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "likePost",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_messageId",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "markMessageAsRead",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "posts",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "postId",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "author",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "contentHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isVisible",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "privateMessages",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "messageId",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "encryptedContent",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isRead",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "_profileHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "registerUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "_encryptedContent",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "sendPrivateMessage",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_postId",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "sharePost",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalConnections",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalPosts",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalUsers",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_userToUnfollow",
+                        "type": "address"
+                    }
+                ],
+                "name": "unfollowUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "userMessages",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "userPosts",
+                "outputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "users",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "profileHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isActive",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "joinDate",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "exists",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        let web3Provider = null;
+        let contract = null;
+        let userAccount = null;
+        let isRegistered = false;
+
+        // Initialize the application
+        async function initApp() {
+            updateUI();
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    }
+                } catch (error) {
+                    console.error('Error checking existing connection:', error);
+                }
+            }
+
+            // Load network stats even without wallet connection
+            await loadNetworkStatsPublic();
+        }
+
+        // Connect to MetaMask
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                    // Check if on Sepolia network
+                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    if (chainId !== '0xaa36a7') { // Sepolia chain ID
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0xaa36a7' }],
+                            });
+                        } catch (switchError) {
+                            if (switchError.code === 4902) {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: '0xaa36a7',
+                                        chainName: 'Sepolia Testnet',
+                                        nativeCurrency: {
+                                            name: 'ETH',
+                                            symbol: 'ETH',
+                                            decimals: 18
+                                        },
+                                        rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
+                                        blockExplorerUrls: ['https://sepolia.etherscan.io/']
+                                    }]
+                                });
+                            }
+                        }
+                    }
+
+                    web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = web3Provider.getSigner();
+                    userAccount = await signer.getAddress();
+
+                    // Initialize contract
+                    contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                    document.getElementById('walletStatus').innerHTML = `
+                        <strong>Wallet: Connected</strong><br>
+                        <small>${userAccount.substring(0, 10)}...${userAccount.substring(userAccount.length - 8)}</small>
+                    `;
+                    document.getElementById('walletStatus').className = 'wallet-status';
+
+                    await checkUserRegistration();
+                    await loadNetworkStats();
+                    updateUI();
+
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    showError('Failed to connect wallet: ' + error.message);
+                }
+            } else {
+                showError('MetaMask not detected. Please install MetaMask extension.');
+            }
+        }
+
+        // Load network stats without wallet connection
+        async function loadNetworkStatsPublic() {
+            try {
+                const provider = new ethers.providers.JsonRpcProvider('https://ethereum-sepolia-rpc.publicnode.com');
+                const contractReadOnly = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+
+                const stats = await contractReadOnly.getNetworkStats();
+                document.getElementById('totalUsers').textContent = stats.users_count.toString();
+                document.getElementById('totalPosts').textContent = stats.posts_count.toString();
+                document.getElementById('totalConnections').textContent = stats.connections_count.toString();
+            } catch (error) {
+                console.error('Error loading public network stats:', error);
+                document.getElementById('totalUsers').textContent = 'Error';
+                document.getElementById('totalPosts').textContent = 'Error';
+                document.getElementById('totalConnections').textContent = 'Error';
+            }
+        }
+
+        // Check if user is registered
+        async function checkUserRegistration() {
+            try {
+                const user = await contract.users(userAccount);
+                isRegistered = user.exists;
+
+                if (isRegistered) {
+                    document.getElementById('userStatus').innerHTML = `
+                        <strong>✅ Registered</strong><br>
+                        <small>Joined: ${new Date(user.joinDate * 1000).toLocaleDateString()}</small>
+                    `;
+                    await loadUserPosts();
+                    await loadUserMessages();
+                } else {
+                    document.getElementById('userStatus').innerHTML = `
+                        <strong>❌ Not Registered</strong><br>
+                        <small>Register to start using the network</small>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error checking registration:', error);
+            }
+        }
+
+        // Register user
+        async function registerUser() {
+            const profileHash = document.getElementById('profileHash').value;
+            if (!profileHash) {
+                showError('Please enter a profile hash');
+                return;
+            }
+
+            try {
+                // Create a proper bytes32 hash from the input
+                let hashBytes;
+                if (profileHash.length <= 31) {
+                    // If short enough, use formatBytes32String
+                    hashBytes = ethers.utils.formatBytes32String(profileHash);
+                } else {
+                    // If too long, create a hash
+                    hashBytes = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(profileHash));
+                }
+
+                const tx = await contract.registerUser(hashBytes);
+                showSuccess('Registration transaction sent. Waiting for confirmation...');
+
+                await tx.wait();
+                showSuccess('Successfully registered!');
+
+                await checkUserRegistration();
+                await loadNetworkStats();
+                updateUI();
+            } catch (error) {
+                console.error('Error registering user:', error);
+                showError('Registration failed: ' + error.message);
+            }
+        }
+
+        // Create post
+        async function createPost() {
+            const content = document.getElementById('postContent').value;
+            const privacyLevel = document.getElementById('privacyLevel').value;
+
+            if (!content) {
+                showError('Please enter post content');
+                return;
+            }
+
+            try {
+                // Create a proper bytes32 hash for content
+                let contentHash;
+                if (content.length <= 31) {
+                    contentHash = ethers.utils.formatBytes32String(content);
+                } else {
+                    contentHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(content));
+                }
+                const tx = await contract.createPost(contentHash, parseInt(privacyLevel));
+                showSuccess('Post creation transaction sent. Waiting for confirmation...');
+
+                await tx.wait();
+                showSuccess('Post created successfully!');
+
+                document.getElementById('postContent').value = '';
+                await loadUserPosts();
+                await loadNetworkStats();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                showError('Failed to create post: ' + error.message);
+            }
+        }
+
+        // Follow user
+        async function followUser() {
+            const address = document.getElementById('followAddress').value;
+            if (!ethers.utils.isAddress(address)) {
+                showError('Please enter a valid address');
+                return;
+            }
+
+            try {
+                const tx = await contract.followUser(address);
+                showSuccess('Follow transaction sent. Waiting for confirmation...');
+
+                await tx.wait();
+                showSuccess('Successfully followed user!');
+
+                document.getElementById('followAddress').value = '';
+                await loadNetworkStats();
+            } catch (error) {
+                console.error('Error following user:', error);
+                showError('Failed to follow user: ' + error.message);
+            }
+        }
+
+        // Send private message
+        async function sendMessage() {
+            const recipient = document.getElementById('messageRecipient').value;
+            const content = document.getElementById('messageContent').value;
+
+            if (!ethers.utils.isAddress(recipient)) {
+                showError('Please enter a valid recipient address');
+                return;
+            }
+
+            if (!content) {
+                showError('Please enter message content');
+                return;
+            }
+
+            try {
+                // Create a proper bytes32 hash for message content
+                let contentHash;
+                if (content.length <= 31) {
+                    contentHash = ethers.utils.formatBytes32String(content);
+                } else {
+                    contentHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(content));
+                }
+                const tx = await contract.sendPrivateMessage(recipient, contentHash);
+                showSuccess('Message transaction sent. Waiting for confirmation...');
+
+                await tx.wait();
+                showSuccess('Message sent successfully!');
+
+                document.getElementById('messageRecipient').value = '';
+                document.getElementById('messageContent').value = '';
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showError('Failed to send message: ' + error.message);
+            }
+        }
+
+        // Load network statistics
+        async function loadNetworkStats() {
+            try {
+                const stats = await contract.getNetworkStats();
+                document.getElementById('totalUsers').textContent = stats.users_count.toString();
+                document.getElementById('totalPosts').textContent = stats.posts_count.toString();
+                document.getElementById('totalConnections').textContent = stats.connections_count.toString();
+            } catch (error) {
+                console.error('Error loading network stats:', error);
+            }
+        }
+
+        // Load user posts
+        async function loadUserPosts() {
+            try {
+                const postIds = await contract.getUserPosts(userAccount, 10);
+                const postsContainer = document.getElementById('postsContainer');
+
+                if (postIds.length === 0) {
+                    postsContainer.innerHTML = '<div class="loading">No posts yet. Create your first post!</div>';
+                    return;
+                }
+
+                let postsHTML = '';
+                for (let i = 0; i < postIds.length; i++) {
+                    const postInfo = await contract.getPostInfo(postIds[i]);
+
+                    postsHTML += `
+                        <div class="post">
+                            <div class="post-header">
+                                <span class="post-author">${postInfo.author.substring(0, 10)}...${postInfo.author.substring(postInfo.author.length - 8)}</span>
+                                <span class="post-time">${new Date(postInfo.timestamp * 1000).toLocaleString()}</span>
+                            </div>
+                            <div class="post-content">
+                                ${tryParseBytes32String(postInfo.contentHash)}
+                            </div>
+                            <div class="post-actions">
+                                <button onclick="likePost(${postIds[i]})">👍 Like</button>
+                                <button onclick="sharePost(${postIds[i]})">🔄 Share</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                postsContainer.innerHTML = postsHTML;
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                document.getElementById('postsContainer').innerHTML = '<div class="error">Error loading posts</div>';
+            }
+        }
+
+        // Load user messages
+        async function loadUserMessages() {
+            try {
+                const messageCount = await contract.getUserMessageCount(userAccount);
+                const messagesContainer = document.getElementById('messagesContainer');
+
+                if (messageCount.eq(0)) {
+                    messagesContainer.innerHTML = '<div class="loading">No messages yet.</div>';
+                    return;
+                }
+
+                let messagesHTML = '';
+                const maxMessages = Math.min(5, messageCount.toNumber());
+
+                for (let i = 0; i < maxMessages; i++) {
+                    const messageId = await contract.userMessages(userAccount, i);
+                    const message = await contract.privateMessages(messageId);
+
+                    messagesHTML += `
+                        <div class="message-item">
+                            <div class="message-header">
+                                <span class="message-sender">From: ${message.sender.substring(0, 10)}...${message.sender.substring(message.sender.length - 8)}</span>
+                                <span class="message-time">${new Date(message.timestamp * 1000).toLocaleString()}</span>
+                            </div>
+                            <div class="message-content">
+                                ${tryParseBytes32String(message.encryptedContent)}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                messagesContainer.innerHTML = messagesHTML;
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messagesContainer').innerHTML = '<div class="error">Error loading messages</div>';
+            }
+        }
+
+        // Like post
+        async function likePost(postId) {
+            try {
+                const tx = await contract.likePost(postId);
+                showSuccess('Like transaction sent...');
+                await tx.wait();
+                showSuccess('Post liked!');
+            } catch (error) {
+                console.error('Error liking post:', error);
+                showError('Failed to like post: ' + error.message);
+            }
+        }
+
+        // Share post
+        async function sharePost(postId) {
+            try {
+                const tx = await contract.sharePost(postId);
+                showSuccess('Share transaction sent...');
+                await tx.wait();
+                showSuccess('Post shared!');
+            } catch (error) {
+                console.error('Error sharing post:', error);
+                showError('Failed to share post: ' + error.message);
+            }
+        }
+
+        // Update UI based on connection and registration status
+        function updateUI() {
+            const isConnected = userAccount !== null;
+
+            // Update register button
+            const registerBtn = document.getElementById('registerBtn');
+            const registerBtnText = document.getElementById('registerBtnText');
+            if (isConnected) {
+                registerBtn.disabled = false;
+                registerBtnText.textContent = isRegistered ? 'Already Registered' : 'Register User';
+                if (isRegistered) {
+                    registerBtn.disabled = true;
+                }
+            } else {
+                registerBtn.disabled = true;
+                registerBtnText.textContent = 'Connect Wallet First';
+            }
+
+            document.getElementById('createPostBtn').disabled = !isConnected || !isRegistered;
+            document.getElementById('followBtn').disabled = !isConnected || !isRegistered;
+            document.getElementById('sendMessageBtn').disabled = !isConnected || !isRegistered;
+        }
+
+        // Helper function to safely parse bytes32 strings
+        function tryParseBytes32String(bytes32Hash) {
+            try {
+                // Try to parse as string first
+                const parsed = ethers.utils.parseBytes32String(bytes32Hash);
+                if (parsed && parsed.trim()) {
+                    return parsed;
+                }
+            } catch (error) {
+                // If parsing fails, it's likely a hash, show truncated version
+            }
+
+            // Show hash in a readable format
+            return `Content Hash: ${bytes32Hash.substring(0, 10)}...${bytes32Hash.substring(bytes32Hash.length - 8)}`;
+        }
+
+        // Utility functions
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.feed').insertBefore(errorDiv, document.querySelector('.feed').firstChild);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.feed').insertBefore(successDiv, document.querySelector('.feed').firstChild);
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+
+        // Initialize app when page loads
+        window.addEventListener('load', initApp);
+
+        // Listen for account changes
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', function (accounts) {
+                window.location.reload();
+            });
+
+            window.ethereum.on('chainChanged', function (chainId) {
+                window.location.reload();
+            });
+        }
+    </script>
+</body>
+</html>
